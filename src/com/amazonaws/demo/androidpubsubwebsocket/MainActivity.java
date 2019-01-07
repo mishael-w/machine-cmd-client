@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements IAwsCallback, IFr
 
 
     public class PagerAdapter extends FragmentPagerAdapter {
-        private final static int NUM_ITEMS = 3;
+        private final static int NUM_ITEMS = 2;
 
         public PagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);

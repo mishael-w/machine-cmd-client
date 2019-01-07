@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amazonaws.demo.androidpubsubwebsocket.Model.Device;
 
@@ -58,6 +59,11 @@ public class FragmentA extends Fragment {
         deviceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (!((Device)deviceListView.getItemAtPosition(i)).status){
+                    if (getContext() != null)
+                        Toast.makeText(getContext(),"Device is offline", Toast.LENGTH_SHORT ).show();
+                    return;
+                }
                 DialogFragment newFragment = new DeviceDialog();
                 Bundle args = new Bundle();
                 Device device = (Device) deviceListView.getItemAtPosition(i);
