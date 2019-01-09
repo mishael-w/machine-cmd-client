@@ -10,8 +10,16 @@ public class Post {
     public final static int POST_TYPE_PERSONAL = 2;
 
     public int type;
+    public int destination; // 1=hsl0, 2=hsl1
     public String sender;
     public String data;
+
+    public Post(int type, int destination, String sender, String data) {
+        this.type = type;
+        this.destination = destination;
+        this.sender = sender;
+        this.data = data;
+    }
 
     public Post(int type, String sender, String data) {
         this.type = type;
@@ -38,11 +46,13 @@ public class Post {
         try {
             root.put("type", type);
             root.put("sender", sender);
+            root.put("dest", destination);
             root.put("data", data);
         } catch (JSONException e) {
             e.printStackTrace();
             return "{" +
                     "\"type\": " + type + ",\n" +
+                    "\"dest\": \"" + destination + "\",\n" +
                     "\"sender\": \"" + sender + "\",\n" +
                     "\"data\": \"" + data + "\"\n" +
                     "}" ;

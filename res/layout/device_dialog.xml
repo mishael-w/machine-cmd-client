@@ -13,8 +13,8 @@
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:gravity="bottom"
         android:background="@android:color/transparent"
+        android:gravity="bottom"
         android:text="Enter command name"
         android:textColor="@android:color/black"
         app:layout_constraintBottom_toTopOf="@+id/cmd_name_edit_text"
@@ -57,15 +57,18 @@
 
     <EditText
         android:id="@+id/cmd_content_tv"
-        android:layout_width="330dp"
-        android:layout_height="249dp"
+        android:layout_width="305dp"
+        android:layout_height="163dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/text_view_bg"
         android:gravity="top"
         android:hint="command content..."
         android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline" />
 
@@ -74,7 +77,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="245dp" />
+        app:layout_constraintGuide_begin="332dp" />
 
     <TextView
         android:id="@+id/enter_cmd_title"
@@ -110,7 +113,7 @@
         android:ems="10"
         android:hint="Name"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/enter_cmd_title"
+        app:layout_constraintBottom_toTopOf="@+id/dest_spinner"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -134,4 +137,14 @@
         android:text="Cancel"
         app:layout_constraintEnd_toStartOf="@+id/add_cmd_btn"
         app:layout_constraintTop_toBottomOf="@+id/cmd_content_tv" />
+
+    <Spinner
+        android:id="@+id/dest_spinner"
+        android:layout_width="162dp"
+        android:layout_height="38dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/enter_cmd_title"
+        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

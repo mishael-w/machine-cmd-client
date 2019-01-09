@@ -38,6 +38,7 @@ public class DeviceDialog extends DialogFragment {
 
     ArrayList<Command> commandsList;
     Spinner cmdSpinner;
+    Spinner destSpinner;
     Button showCmdOption;
     Button addCmd;
     Button executeCmd;
@@ -69,6 +70,7 @@ public class DeviceDialog extends DialogFragment {
         cmdName = v.findViewById(R.id.cmd_name_edit_text);
         executeCmd = v.findViewById(R.id.execute_cmd);
         cancelBtn = v.findViewById(R.id.cancel_btn);
+        destSpinner = v.findViewById(R.id.dest_spinner);
         hideCmdOptions();
         populateSpinner();
 
@@ -89,11 +91,14 @@ public class DeviceDialog extends DialogFragment {
             public void onClick(View view) {
                 String cmdNameValue = cmdName.getText().toString();
                 String cmdContentValue = cmdContent.getText().toString();
-                addCmdToFile(new Command(cmdNameValue, cmdContentValue));
+                Log.i("xaxaxa", "equals HSL0? " + destSpinner.getSelectedItem().toString().equals("HSL0"));
+                Log.i("xaxaxa", "equals HSL1? " + destSpinner.getSelectedItem().toString().equals("HSL1"));
+                int dest = (destSpinner.getSelectedItem().toString().equals("HSL0") ? 1 : 2);
+                addCmdToFile(new Command(dest, cmdNameValue, cmdContentValue));
                 if (commandsList == null){
                     commandsList = new ArrayList<>();
                 }
-                commandsList.add(new Command(cmdNameValue, cmdContentValue));
+                commandsList.add(new Command(dest, cmdNameValue, cmdContentValue));
                 cmdName.setText("");
                 cmdContent.setText("");
                 refreshSpinner();
@@ -108,7 +113,11 @@ public class DeviceDialog extends DialogFragment {
                 Command chosenCommand = (Command) cmdSpinner.getSelectedItem();
                 Log.i(TAG, "calling MainActivity.publish");
                 MainActivity activity = (MainActivity)getActivity();
-                Post postToPublish = new Post(Post.POST_TYPE_PERSONAL, activity.awsManager.clientId, chosenCommand.getContent() );
+                Log.i("xaxaxa", "selected  item: " + chosenCommand.getDestination());
+//                Log.i("xaxaxa", "equals HSL0? " + chosenCommand.getDestination().equals("HSL0"));
+//                Log.i("xaxaxa", "equals HSL1? " + chosenCommand.getDestination().equals("HSL1"));
+                int dest = chosenCommand.getDestination();// (cmdSpinner.getSelectedItem().toString().equals("HSL0") ? 1 : 2);
+                Post postToPublish = new Post(Post.POST_TYPE_PERSONAL, dest, activity.awsManager.clientId, chosenCommand.getContent() );
                 Bundle bundle = new Bundle();
                 bundle.putString("msg", postToPublish.toJSon());
                 bundle.putString("topic", deviceImeiTitle.getText().toString());
@@ -126,8 +135,24 @@ public class DeviceDialog extends DialogFragment {
                 hideCmdOptions();
             }
         });
+        ArrayList<String> destList = new ArrayList<>();
+        destList.add("HSL0");
+        destList.add("HSL1");
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, destList){
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View listItem = convertView;
+                if(listItem == null)
+                    listItem = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_spinner_item,parent,false);
 
-
+                TextView tv = listItem.findViewById(android.R.id.text1);
+                String name = getItem(position);
+                tv.setText(name);
+                return listItem;
+            }
+        };
+        destSpinner.setAdapter(adapter);
 
         return v;
     }
@@ -146,6 +171,8 @@ public class DeviceDialog extends DialogFragment {
         cmdNameTitle.setEnabled(false);
         cancelBtn.setVisibility(View.INVISIBLE);
         cancelBtn.setEnabled(false);
+        destSpinner.setVisibility(View.INVISIBLE);
+        destSpinner.setEnabled(false);
         showCmdOption.setEnabled(true);
         cmdSpinner.setEnabled(true);
     }
@@ -163,6 +190,9 @@ public class DeviceDialog extends DialogFragment {
         cmdNameTitle.setVisibility(View.VISIBLE);
         cancelBtn.setVisibility(View.VISIBLE);
         cancelBtn.setEnabled(true);
+        destSpinner.setVisibility(View.VISIBLE);
+        destSpinner.setEnabled(true);
+
         showCmdOption.setEnabled(false);
         cmdSpinner.setEnabled(false);
     }
@@ -183,10 +213,6 @@ public class DeviceDialog extends DialogFragment {
             }
         };
         cmdSpinner.setAdapter(adapter);
-        Log.i(TAG, "exec command should be: " + String.valueOf(commandsList != null && commandsList.size() > 0));
-        Log.i(TAG, "exec command should be: " + String.valueOf(commandsList != null && commandsList.size() > 0));
-        Log.i(TAG, "exec command should be: " + String.valueOf(commandsList != null && commandsList.size() > 0));
-        Log.i(TAG, "exec command should be: " + String.valueOf(commandsList != null && commandsList.size() > 0));
         Log.i(TAG, "exec command should be: " + String.valueOf(commandsList != null && commandsList.size() > 0));
         Log.i(TAG, "exec command should be: " + String.valueOf(commandsList != null && commandsList.size() > 0));
         Log.i(TAG, "exec command should be: " + String.valueOf(commandsList != null && commandsList.size() > 0));
@@ -214,7 +240,8 @@ public class DeviceDialog extends DialogFragment {
                 JSONObject object = commandsArray.getJSONObject(i);
                 String commandName = object.getString("name");
                 String commandContent = object.getString("content");
-                Command tempCommand = new Command(commandName, commandContent);
+                Integer commandDest = object.getInt("dest");
+                Command tempCommand = new Command(commandDest ,commandName, commandContent);
                 commandsList.add(tempCommand);
             }
         } catch (JSONException e) {
@@ -291,6 +318,7 @@ public class DeviceDialog extends DialogFragment {
             JSONObject commandAsJson = new JSONObject();
             commandAsJson.put("name", command.getName());
             commandAsJson.put("content", command.getContent());
+            commandAsJson.put("dest", command.getDestination());
 
             JSONObject root;
             if (cmdFileContent != null && !cmdFileContent.isEmpty())
